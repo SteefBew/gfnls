@@ -8,7 +8,7 @@ import (
 	"os"
 )
 
-type GFNPC []struct {
+type GFNPC struct {
 	ID                    int      `json:"id"`
 	Title                 string   `json:"title"`
 	IsFullyOptimized      bool     `json:"isFullyOptimized"`
@@ -19,7 +19,8 @@ type GFNPC []struct {
 	Status                string   `json:"status"`
 }
 
-func (g *GFNPC) load(r io.Reader) {
+func LoadJSON(r io.Reader) []GFNPC {
+	var g []GFNPC
 	dec := json.NewDecoder(r)
 	for {
 		if err := dec.Decode(&g); err == io.EOF {
@@ -28,14 +29,15 @@ func (g *GFNPC) load(r io.Reader) {
 			log.Fatal(err)
 		}
 	}
+	return g
 }
 
-func (g *GFNPC) LoadUrl(url string) {
+func LoadUrl(url string) []GFNPC {
 	resp, _ := http.Get(url)
-	g.load(resp.Body)
+	return LoadJSON(resp.Body)
 }
 
-func (g *GFNPC) LoadFile(filen string) {
+func LoadFile(filen string) []GFNPC {
 	reader, _ := os.Open(filen)
-	g.load(reader)
+	return LoadJSON(reader)
 }

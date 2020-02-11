@@ -67,18 +67,18 @@ func doArchiveLs() {
 }
 
 func doLs() {
-	g := GFNPC{}
+	var g []GFNPC
 	if len(source) != 0 {
 		if _, err := os.Stat(source); os.IsNotExist(err) {
 			// Not a valid file so try reading it as an archive.org timestamp
-			g.LoadUrl(fmt.Sprintf("https://web.archive.org/web/%sid_/%s", source, URL))
+			g = LoadUrl(fmt.Sprintf("https://web.archive.org/web/%sid_/%s", source, URL))
 		} else {
 			// Valid path so just read from it
-			g.LoadFile(source)
+			g = LoadFile(source)
 		}
 	} else {
 		// No source provided so default to the main nvidia site
-		g.LoadUrl(URL)
+		g = LoadUrl(URL)
 	}
 
 	tFormat := template.Must(template.New("format").Parse(fmt.Sprintf("%s\n", format)))
