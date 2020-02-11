@@ -1,5 +1,5 @@
-# gfnpcls
-Used for generating a listing of all geforce now supported games.
+# gfnls
+A tool to generate a listing of all Nvidia GeForce Now games using their JSON data set as well as archive.org's copy.
 
 ## Usage
 Usage of ./gfnls:
