@@ -17,7 +17,6 @@ type GFNPC []struct {
 	Status                string   `json:"status"`
 }
 
-
 func (g *GFNPC) Load(r io.Reader) {
 	dec := json.NewDecoder(r)
 	for {
