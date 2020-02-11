@@ -2,7 +2,26 @@ package main
 
 import (
 	"sort"
+	"strings"
 )
+
+var searches = map[string]lessFunc{
+	"title": func(p1, p2 *GFNPC) bool {
+		return strings.ToLower(p1.Title) < strings.ToLower(p2.Title)
+	},
+	"isfullyoptimized": func(p1, p2 *GFNPC) bool {
+		return p1.IsFullyOptimized != p2.IsFullyOptimized
+	},
+	"ishighlightssupported": func(p1, p2 *GFNPC) bool {
+		return p1.IsHighlightsSupported != p2.IsHighlightsSupported
+	},
+	"publisher": func(p1, p2 *GFNPC) bool {
+		return p1.Publisher < p2.Publisher
+	},
+	"status": func(p1, p2 *GFNPC) bool {
+		return p1.Status < p2.Status
+	},
+}
 
 type lessFunc func(p1, p2 *GFNPC) bool
 

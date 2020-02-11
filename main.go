@@ -9,11 +9,12 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"strings"
 	"text/template"
 )
 
 var (
-	source, format string
+	source, sorts, format string
 )
 
 const CDXSearchURL = "http://web.archive.org/cdx/search/cdx?output=json"
@@ -21,11 +22,10 @@ const CDXSearchURL = "http://web.archive.org/cdx/search/cdx?output=json"
 const URL = "https://static.nvidiagrid.net/supported-public-game-list/gfnpc.json?JSON"
 
 func main() {
-	// Feb 4th 20200204184424
-	// Feb 5th 20200205085751
 	var cmd string
 	flag.StringVar(&cmd, "cmd", "ls", "Command to run, options are 'ls' and 'wbls'. 'wbls' provides a list of valid timestamps on archive.org")
 	flag.StringVar(&source, "source", "", "Source for the data, either filename or archive.org timestamp")
+	flag.StringVar(&sorts, "sort", "title", "Comma separated list of fields to sort by")
 	flag.StringVar(&format, "format", "{{.Title}}", "Format the output using the given Go template")
 	flag.Parse()
 	switch cmd {
@@ -83,6 +83,20 @@ func doLs() {
 
 	tFormat := template.Must(template.New("format").Parse(fmt.Sprintf("%s\n", format)))
 
+	var sortfs []lessFunc
+	sortta := strings.Split(sorts, ",")
+
+	for _, sortfn := range sortta {
+
+		if sortf, ok := searches[sortfn]; ok {
+			fmt.Printf("Adding %v\n", sortfn)
+			sortfs = append(sortfs, sortf)
+		}
+	}
+
+	if len(sortfs) > 0 {
+		OrderedBy(sortfs...).Sort(g)
+	}
 	for _, game := range g {
 		tFormat.Execute(os.Stdout, game)
 	}
