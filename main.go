@@ -83,7 +83,7 @@ func doLs() {
 
 	tFormat := template.Must(template.New("format").Parse(fmt.Sprintf("%s\n", format)))
 
-	for _, title := range g {
-		tFormat.Execute(os.Stdout, title)
+	for _, game := range g {
+		tFormat.Execute(os.Stdout, game)
 	}
 }
