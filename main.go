@@ -1,11 +1,12 @@
 package main
 
 import (
-	"io"
-	"fmt"
 	"flag"
+	"fmt"
+	"io"
 	"net/http"
 	"os"
+	"text/template"
 )
 
 const URL = "https://static.nvidiagrid.net/supported-public-game-list/gfnpc.json?JSON"
@@ -13,12 +14,13 @@ const URL = "https://static.nvidiagrid.net/supported-public-game-list/gfnpc.json
 func main() {
 	// Feb 4th 20200204184424
 	// Feb 5th 20200205085751
-	var source string
+	var source, format string
 	var reader io.Reader
 	flag.StringVar(&source, "source", "", "Source for the data, either filename or archive.org timestamp")
+	flag.StringVar(&format, "format", "{{.Title}}", "Format the output using the given Go template")
 	flag.Parse()
 	g := GFNPC{}
-		if len(source) != 0 {
+	if len(source) != 0 {
 		if _, err := os.Stat(source); os.IsNotExist(err) {
 			// Not a valid file so try reading it as an archive.org timestamp
 			reader = readUrl(fmt.Sprintf("https://web.archive.org/web/%sid_/%s", source, URL))
@@ -31,8 +33,11 @@ func main() {
 		reader = readUrl(URL)
 	}
 	g.Load(reader)
-	for _,title := range g {
-		fmt.Printf("%+v\n", title.Title)
+
+	tFormat := template.Must(template.New("format").Parse(fmt.Sprintf("%s\n", format)))
+
+	for _, title := range g {
+		tFormat.Execute(os.Stdout, title)
 	}
 }
 
