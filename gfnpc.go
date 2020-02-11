@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"io"
 	"log"
+	"net/http"
+	"os"
 )
 
 type GFNPC []struct {
@@ -17,7 +19,7 @@ type GFNPC []struct {
 	Status                string   `json:"status"`
 }
 
-func (g *GFNPC) Load(r io.Reader) {
+func (g *GFNPC) load(r io.Reader) {
 	dec := json.NewDecoder(r)
 	for {
 		if err := dec.Decode(&g); err == io.EOF {
@@ -26,4 +28,14 @@ func (g *GFNPC) Load(r io.Reader) {
 			log.Fatal(err)
 		}
 	}
+}
+
+func (g *GFNPC) LoadUrl(url string) {
+	resp, _ := http.Get(url)
+	g.load(resp.Body)
+}
+
+func (g *GFNPC) LoadFile(filen string) {
+	reader, _ := os.Open(filen)
+	g.load(reader)
 }
